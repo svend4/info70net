@@ -25,12 +25,20 @@ const rootRequiredFiles = [
   "package.json",
   "README.md",
   "index.html",
+  "safety.html",
+  "safety.css",
+  "safety.js",
+  "policy/storage-manifest.json",
+  "SECURITY.md",
+  "policy/help-resources.json",
+  "CONTRIBUTING.md",
   "portal.js",
   "portal.css",
   "docs/continuation-sprint-5.md",
   "docs/continuation-sprint-6.md",
   "packages/shared/src/index.js",
   "packages/shared/styles/base.css",
+  "scripts/check-policy.mjs",
   "scripts/validate-monorepo.mjs",
   "scripts/browser-smoke.mjs",
   "tests/shared.test.mjs",
@@ -91,6 +99,10 @@ try {
     "package.json validate script must run the monorepo validator.",
   );
   check(
+    packageJson.scripts?.policy === "node scripts/check-policy.mjs",
+    "package.json policy script must run the policy gate.",
+  );
+  check(
     packageJson.scripts?.smoke === "node scripts/browser-smoke.mjs",
     "package.json smoke script must run the browser smoke check.",
   );
@@ -119,6 +131,14 @@ for (const appId of expectedAppIds) {
   const appHtml = await readText("apps/" + appId + "/index.html");
   const appSource = await readText("apps/" + appId + "/app.js");
   const pageIds = new Set([...(appHtml ?? "").matchAll(/\bid\s*=\s*["']([^"']+)["']/gi)].map((match) => match[1]));
+
+  const htmlLanguage = appHtml
+    ?.match(/<html\b[^>]*\blang\s*=\s*["']([^"']+)["']/i)?.[1]
+    ?.toLowerCase();
+  check(
+    htmlLanguage === config.locale,
+    appId + " HTML language must match its shared locale.",
+  );
 
   check(config.id === appId, "Config ID does not match its key for " + appId + ".");
   for (const field of ["title", "productLabel", "tagline", "description", "audience", "theme"]) {
@@ -250,6 +270,7 @@ async function validateHtmlPage(relativePath, label) {
 }
 
 await Promise.all([
+  validateHtmlPage("safety.html", "Safety & Privacy"),
   validateHtmlPage("index.html", "Portal"),
   ...expectedAppIds.map((appId) =>
     validateHtmlPage("apps/" + appId + "/index.html", appId),

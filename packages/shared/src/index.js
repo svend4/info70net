@@ -95,6 +95,7 @@ const rawAppConfigs = {
   },
   "help-bridge": {
     id: "help-bridge",
+    locale: "en",
     title: "Help Bridge",
     productLabel: "A calm next step",
     tagline: "You do not have to solve a difficult online moment alone.",
@@ -146,6 +147,7 @@ const rawAppConfigs = {
     tagline: "Practice the small checks that turn an AI answer into a better decision.",
     description:
       "Work through short challenges about evidence, missing viewpoints, and prompts while staying in control of the final answer.",
+    locale: "en",
     audience: "Students, families, and first-time AI explorers",
     theme: "mint",
     primaryAction: {
@@ -349,11 +351,14 @@ export function renderExperienceCards(items) {
   return '<div class="experience-grid" role="list">' + cards.join("") + "</div>";
 }
 
-const memoryStorage = new Map();
+const memoryStores = {
+  local: new Map(),
+  session: new Map(),
+};
 
-function resolvePersistentStorage() {
+function resolveWebStorage(storageName) {
   try {
-    const storage = globalThis.localStorage;
+    const storage = globalThis[storageName];
     if (
       storage &&
       typeof storage.getItem === "function" &&
@@ -363,7 +368,7 @@ function resolvePersistentStorage() {
       return storage;
     }
   } catch {
-    // Access to localStorage can be denied in privacy-focused browser contexts.
+    // Browser storage can be denied in privacy-focused contexts.
   }
 
   return null;
@@ -377,9 +382,9 @@ function assertStoragePart(value, label) {
   return value.trim();
 }
 
-export function createStorage(namespace) {
+function createJsonStorage(namespace, storageName, memoryStorage) {
   const prefix = assertStoragePart(namespace, "Storage namespace") + ":";
-  const persistentStorage = resolvePersistentStorage();
+  const persistentStorage = resolveWebStorage(storageName);
 
   function namespacedKey(key) {
     return prefix + assertStoragePart(key, "Storage key");
@@ -459,6 +464,7 @@ export function createStorage(namespace) {
       if (persistentStorage) {
         try {
           for (let index = persistentStorage.length - 1; index >= 0; index -= 1) {
+
             const key = persistentStorage.key(index);
             if (key?.startsWith(prefix)) {
               persistentStorage.removeItem(key);
@@ -476,4 +482,20 @@ export function createStorage(namespace) {
       }
     },
   });
+}
+
+export function createStorage(namespace) {
+  return createJsonStorage(
+    namespace,
+    "localStorage",
+    memoryStores.local,
+  );
+}
+
+export function createSessionStorage(namespace) {
+  return createJsonStorage(
+    namespace,
+    "sessionStorage",
+    memoryStores.session,
+  );
 }

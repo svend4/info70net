@@ -54,6 +54,13 @@
   font-size: 0.82rem;
 }
 
+.portal-policy-link {
+  color: #1d6b51;
+  font-size: 0.84rem;
+  font-weight: 760;
+  text-underline-offset: 0.2rem;
+}
+
 .portal-hero {
   display: grid;
   min-height: min(650px, 78vh);
@@ -240,6 +247,14 @@
 
 .portal-footer p { margin: 0; }
 .portal-footer a { color: inherit; }
+
+.portal-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.portal-footer nav a { color: inherit; }
 
 @media (min-width: 760px) {
   .portal-section-heading {

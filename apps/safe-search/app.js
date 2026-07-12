@@ -13,6 +13,7 @@ import {
   filterResults,
   getCategoryForExperienceIntent,
   getSavedResults,
+  getApprovedResultUrl,
   sanitizeHistory,
   sanitizeStoredIds,
   toggleSavedId,
@@ -38,14 +39,43 @@ const elements = {
   savedCount: document.querySelector("#saved-count"),
   history: document.querySelector("#search-history"),
   clearHistory: document.querySelector("#clear-history"),
+  historyOptIn: document.querySelector("#history-opt-in"),
+  historyStorageStatus: document.querySelector("#history-storage-status"),
 };
+
+const storedSavedIds = storage.get("saved", null);
+const historyOptIn = storage.get("history-opt-in", false) === true;
+const storedHistory = historyOptIn ? storage.get("history", []) : [];
+if (!historyOptIn) {
+  storage.remove("history");
+}
 
 let state = {
   query: "",
   category: "all",
-  savedIds: sanitizeStoredIds(storage.get("saved", [])),
-  history: sanitizeHistory(storage.get("history", [])),
+  savedIds: sanitizeStoredIds(storedSavedIds ?? []),
+  history: historyOptIn ? sanitizeHistory(storedHistory) : [],
+  historyOptIn,
 };
+
+if (storedSavedIds !== null) {
+  if (state.savedIds.length > 0) {
+    storage.set("saved", state.savedIds);
+  } else {
+    storage.remove("saved");
+  }
+}
+if (historyOptIn) {
+  if (state.history.length > 0) {
+    storage.set("history", state.history);
+  } else {
+    storage.remove("history");
+  }
+}
+
+function availableResults() {
+  return SAFE_RESULTS.filter((result) => getApprovedResultUrl(result) !== null);
+}
 
 function renderStaticContent() {
   elements.appIntro.innerHTML = renderAppIntro(config);
@@ -56,17 +86,29 @@ function renderStaticContent() {
     (category) =>
       `<option value="${escapeHTML(category.id)}">${escapeHTML(category.label)}</option>`,
   ).join("");
+  elements.historyOptIn.checked = state.historyOptIn;
+}
+
+function formatReviewDate(value) {
+  const date = new Date(`${value}T00:00:00Z`);
+  return Number.isNaN(date.getTime())
+    ? "Datum unbekannt"
+    : new Intl.DateTimeFormat("de-DE", {
+        dateStyle: "long",
+        timeZone: "UTC",
+      }).format(date);
 }
 
 function renderSafetyReasons(reasons) {
   return `
     <details class="safety-explanation">
-      <summary>Warum ist dieser Startpunkt sicher?</summary>
+      <summary>Warum wurde dieser Startpunkt ausgewählt?</summary>
       <ul>
         ${reasons.map((reason) => `<li>${escapeHTML(reason)}</li>`).join("")}
       </ul>
       <p class="safety-explanation__note">
-        Sicher bedeutet nicht unfehlbar: Prüfe Datum, Autor und Aussage erneut.
+        Externe Seiten können sich ändern. Prüfe Datum, Autor und Aussage erneut
+        und hole bei etwas Unangenehmem eine vertraute Person dazu.
       </p>
     </details>
   `;
@@ -75,6 +117,20 @@ function renderSafetyReasons(reasons) {
 function renderResultCard(result) {
   const isSaved = state.savedIds.includes(result.id);
   const categoryLabel = categoryLabels.get(result.category) ?? result.category;
+  const approvedUrl = getApprovedResultUrl(result);
+  const sourceAction = approvedUrl
+    ? `
+        <a
+          class="button button--secondary"
+          href="${escapeHTML(approvedUrl)}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="${escapeHTML(result.title)} in einem neuen Tab öffnen"
+        >
+          Externe Quelle öffnen <span aria-hidden="true">↗</span>
+        </a>
+      `
+    : '<span class="button button--secondary" aria-disabled="true">Quelle wird geprüft</span>';
 
   return `
     <article class="result-card" aria-labelledby="result-${escapeHTML(result.id)}-title">
@@ -87,17 +143,16 @@ function renderResultCard(result) {
       <p class="result-card__source">
         Geprüfter Startpunkt: <strong>${escapeHTML(result.source)}</strong>
       </p>
+      <p class="result-card__review">
+        Zuletzt geprüft:
+        <time datetime="${escapeHTML(result.reviewedAt)}">${escapeHTML(
+          formatReviewDate(result.reviewedAt),
+        )}</time>
+        · ${escapeHTML(result.canonicalHost)}
+      </p>
       ${renderSafetyReasons(result.safetyReasons)}
       <div class="result-card__actions">
-        <a
-          class="button button--secondary"
-          href="${escapeHTML(result.url)}"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="${escapeHTML(result.title)} in einem neuen Tab öffnen"
-        >
-          Quelle öffnen <span aria-hidden="true">↗</span>
-        </a>
+        ${sourceAction}
         <button
           class="save-button"
           type="button"
@@ -113,11 +168,11 @@ function renderResultCard(result) {
 }
 
 function renderResults() {
-  const visibleResults = filterResults(SAFE_RESULTS, state);
+  const visibleResults = filterResults(availableResults(), state);
   const hasFilter = Boolean(state.query) || state.category !== "all";
 
   elements.status.textContent = `${visibleResults.length} ${
-    visibleResults.length === 1 ? "sicherer Startpunkt" : "sichere Startpunkte"
+    visibleResults.length === 1 ? "geprüfter Startpunkt" : "geprüfte Startpunkte"
   } gefunden${hasFilter ? " für deine Auswahl" : ""}.`;
 
   if (visibleResults.length === 0) {
@@ -137,7 +192,7 @@ function renderResults() {
 }
 
 function renderSaved() {
-  const savedResults = getSavedResults(SAFE_RESULTS, state.savedIds);
+  const savedResults = getSavedResults(availableResults(), state.savedIds);
   elements.savedCount.textContent = String(savedResults.length);
   elements.savedCount.setAttribute(
     "aria-label",
@@ -193,10 +248,17 @@ function formatHistoryTime(timestamp) {
 
 function renderHistory() {
   elements.clearHistory.disabled = state.history.length === 0;
+  elements.historyStorageStatus.textContent = state.historyOptIn
+    ? "Eingeschaltet: Nur neue Suchen werden ab jetzt auf diesem Gerät gespeichert."
+    : "Ausgeschaltet: Der Verlauf bleibt nur in dieser geöffneten Seite.";
 
   if (state.history.length === 0) {
     elements.history.innerHTML = `
-      <p class="empty-state">Deine abgeschlossenen Suchen erscheinen hier.</p>
+      <p class="empty-state">
+        ${state.historyOptIn
+          ? "Noch keine gespeicherte Suche."
+          : "Suchen erscheinen hier nur für diese geöffnete Seite."}
+      </p>
     `;
     return;
   }
@@ -233,7 +295,27 @@ function persistSaved() {
 }
 
 function persistHistory() {
-  storage.set("history", state.history);
+  if (state.historyOptIn) {
+    storage.set("history", state.history);
+  } else {
+    storage.remove("history");
+  }
+}
+
+function handleHistoryStorageChange() {
+  state.historyOptIn = elements.historyOptIn.checked;
+
+  if (state.historyOptIn) {
+    state.history = [];
+    storage.set("history-opt-in", true);
+    storage.remove("history");
+  } else {
+    storage.remove("history-opt-in");
+    storage.remove("history");
+    state.history = [];
+  }
+
+  renderHistory();
 }
 
 function resetSearch({ focus = false } = {}) {
@@ -252,7 +334,7 @@ function commitSearch() {
     query: elements.query.value.trim(),
     category: elements.category.value,
   };
-  const visibleResults = filterResults(SAFE_RESULTS, state);
+  const visibleResults = filterResults(availableResults(), state);
   const entry = createHistoryEntry({
     query: state.query,
     category: state.category,
@@ -358,3 +440,9 @@ elements.clearHistory.addEventListener("click", () => {
   renderHistory();
   elements.clearHistory.focus();
 });
+
+elements.historyOptIn.addEventListener("change", handleHistoryStorageChange);
+
+for (const control of document.querySelectorAll("[data-requires-js]")) {
+  control.disabled = false;
+}

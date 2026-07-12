@@ -4,6 +4,7 @@ import {
   CATEGORIES,
   DAYS,
   createDefaultPlan,
+  REFLECTION_GUIDANCE,
   evaluateBalance,
   formatMinutes,
   getBalancePercentages,
@@ -95,6 +96,13 @@ test("daily and weekly totals keep digital and offline time distinct", () => {
 test("evaluateBalance gives a calm empty state and accepts the default week", () => {
   assert.deepEqual(evaluateBalance(createEmptyPlan()).map((item) => item.id), ["empty-plan"]);
   assert.deepEqual(evaluateBalance(createDefaultPlan()).map((item) => item.id), ["balanced"]);
+});
+
+test("balance thresholds are labelled as configurable prototype prompts", () => {
+  assert.equal(REFLECTION_GUIDANCE.offlineShareExample, 40);
+  assert.equal(REFLECTION_GUIDANCE.dailyDigitalMinutesExample, 180);
+  assert.match(REFLECTION_GUIDANCE.status, /prototype/i);
+  assert.match(REFLECTION_GUIDANCE.status, /not medical advice/i);
 });
 
 test("evaluateBalance reports specific, actionable imbalance signals", () => {

@@ -16,7 +16,7 @@
     <a class="skip-link" href="#main-content">Direkt zum Inhalt</a>
 
     <header class="site-header">
-      <a class="site-brand" href="#top" aria-label="Safe Search – Startseite">
+      <a class="site-brand" href="../../index.html" aria-label="Zur Übersicht aller Angebote">
         <span class="site-brand__mark" aria-hidden="true">S</span>
         <span>Safe Search</span>
       </a>
@@ -24,11 +24,12 @@
         <a href="#search">Suchen</a>
         <a href="#saved">Gespeichert</a>
         <a href="#history">Verlauf</a>
+        <a href="../../safety.html">Sicherheit &amp; Datenschutz</a>
       </nav>
     </header>
 
     <div id="top" class="page-shell">
-      <div id="app-intro" lang="en"></div>
+      <div id="app-intro"></div>
 
       <main id="main-content">
         <section id="experiences" class="domain-section" aria-labelledby="experiences-title">
@@ -37,7 +38,7 @@
             <h2 id="experiences-title">Wofür möchtest du suchen?</h2>
             <p>Wähle ein Ziel oder starte direkt mit deiner eigenen Frage.</p>
           </div>
-          <div id="experience-cards" lang="en"></div>
+          <div id="experience-cards"></div>
         </section>
 
         <section id="search" class="search-workspace" aria-labelledby="search-title">
@@ -60,22 +61,31 @@
                 inputmode="search"
                 autocomplete="off"
                 placeholder="Zum Beispiel: Tiere, Nachrichten oder Video"
+                maxlength="120"
+                disabled
+                data-requires-js
               />
             </div>
             <div class="field">
               <label for="search-category">Themenraum</label>
-              <select id="search-category" name="category"></select>
+              <select id="search-category" name="category" disabled data-requires-js></select>
             </div>
-            <button class="button button--primary search-form__submit" type="submit">
+            <button class="button button--primary search-form__submit" type="submit" disabled data-requires-js>
               Treffer zeigen
             </button>
-            <button class="button button--quiet" id="clear-search" type="button">
+            <button class="button button--quiet" id="clear-search" type="button" disabled data-requires-js>
               Suche leeren
             </button>
           </form>
 
           <p id="search-status" class="search-status" role="status" aria-live="polite"></p>
-          <div id="search-results" class="result-grid" aria-label="Suchergebnisse"></div>
+          <div
+            id="search-results"
+            class="result-grid"
+            role="region"
+            aria-label="Suchergebnisse"
+            tabindex="-1"
+          ></div>
         </section>
 
         <div class="collection-layout">
@@ -96,10 +106,23 @@
                 <p class="section-heading__eyebrow">Letzte Schritte</p>
                 <h2 id="history-title">Suchverlauf</h2>
               </div>
-              <button class="text-button" id="clear-history" type="button">
+              <button class="text-button" id="clear-history" type="button" disabled data-requires-js>
                 Verlauf löschen
               </button>
             </div>
+            <label class="storage-choice" for="history-opt-in">
+              <input
+                id="history-opt-in"
+                type="checkbox"
+                disabled
+                data-requires-js
+              />
+              <span>
+                <strong>Suchverlauf auf diesem Gerät speichern</strong>
+                <small>Standardmäßig aus. Nur neue Suchen nach dem Einschalten werden gespeichert.</small>
+              </span>
+            </label>
+            <p id="history-storage-status" class="storage-status" role="status" aria-live="polite"></p>
             <div id="search-history"></div>
           </section>
         </div>
@@ -107,8 +130,11 @@
 
       <footer class="app-footer">
         <p>
-          Ein sicherer Treffer ist ein guter Start. Vergleiche bei wichtigen
+          Ein geprüfter Startpunkt ist ein guter Anfang. Vergleiche bei wichtigen
           Fragen trotzdem mehrere Quellen und sprich mit einer vertrauten Person.
+        </p>
+        <p>
+          <a href="../../safety.html">Sicherheit &amp; Datenschutz</a>
         </p>
       </footer>
     </div>

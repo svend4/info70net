@@ -3,6 +3,10 @@ import assert from "node:assert/strict";
 import {
   assessUrgency,
   buildSafetyPlan,
+  DRAFT_MAX_BYTES,
+  DRAFT_TTL_MS,
+  createSessionDraftRecord,
+  readSessionDraftRecord,
   createPersistableDraft,
   getDraftCompletion,
   getTrustedAdultLabel,
@@ -78,4 +82,131 @@ test("draft completion only becomes ready after all triage answers", () => {
   assert.equal(getDraftCompletion(calmDraft).ready, true);
   assert.equal(getDraftCompletion({ ...calmDraft, directThreat: undefined }).ready, false);
   assert.equal(getTrustedAdultLabel(calmDraft), "Ms Lee (a teacher)");
+});
+
+test("not-sure critical answers never produce a steady route", () => {
+  const uncertain = normalizeDraft({
+    ...calmDraft,
+    safeNow: "unsure",
+    directThreat: "unsure",
+    knowsLocation: "unsure",
+  });
+
+  assert.equal(uncertain.safeNow, "unsure");
+  assert.equal(uncertain.directThreat, "unsure");
+  assert.equal(uncertain.knowsLocation, "unsure");
+  assert.equal(getDraftCompletion(uncertain).ready, true);
+  assert.equal(assessUrgency(uncertain).level, "soon");
+  assert.match(assessUrgency(uncertain).label, /adult now/i);
+});
+
+test("temporary draft records expire and reject unknown or tampered schemas", () => {
+  const startedAt = Date.UTC(2026, 6, 12, 12, 0, 0);
+  const record = createSessionDraftRecord(
+    {
+      ...calmDraft,
+      adultName: "Must not persist",
+      notes: "Must not persist",
+      unexpected: "drop",
+    },
+    startedAt,
+  );
+
+  assert.equal(Date.parse(record.expiresAt) - Date.parse(record.createdAt), DRAFT_TTL_MS);
+  assert.ok(
+    new TextEncoder().encode(JSON.stringify(record)).byteLength <= DRAFT_MAX_BYTES,
+  );
+  assert.equal(Object.hasOwn(record.draft, "adultName"), false);
+  assert.equal(Object.hasOwn(record.draft, "notes"), false);
+  assert.deepEqual(
+    readSessionDraftRecord(record, startedAt + DRAFT_TTL_MS - 1),
+    createPersistableDraft(calmDraft),
+  );
+  assert.equal(readSessionDraftRecord(record, startedAt + DRAFT_TTL_MS), null);
+  assert.equal(readSessionDraftRecord({ ...record, version: 999 }, startedAt + 1), null);
+  assert.equal(
+    readSessionDraftRecord(
+      {
+        ...record,
+        expiresAt: new Date(startedAt + DRAFT_TTL_MS + 1).toISOString(),
+      },
+      startedAt + 1,
+    ),
+    null,
+  );
+  assert.equal(readSessionDraftRecord(record, startedAt - 1), null);
+  assert.equal(
+    readSessionDraftRecord(
+      { ...record, draft: { ...record.draft, unknown: "drop" } },
+      startedAt + 1,
+    ),
+    null,
+  );
+  assert.equal(
+    readSessionDraftRecord(
+      { ...record, draft: { ...record.draft, safeNow: "maybe" } },
+      startedAt + 1,
+    ),
+    null,
+  );
+  assert.equal(
+    readSessionDraftRecord({ ...record, unknown: true }, startedAt + 1),
+    null,
+  );
+  assert.equal(
+    readSessionDraftRecord(
+      { ...record, createdAt: "not-a-date" },
+      startedAt + 1,
+    ),
+    null,
+  );
+  assert.equal(
+    readSessionDraftRecord({ ...record, createdAt: "x".repeat(DRAFT_MAX_BYTES) }, startedAt + 1),
+    null,
+  );
+  assert.throws(() => createSessionDraftRecord(calmDraft, Number.NaN), TypeError);
+});
+
+test("all 3^5 tri-state combinations preserve the routing invariants", () => {
+  const answers = ["yes", "no", "unsure"];
+  const incidents = ["insults", "image-pressure", "hate-speech"];
+  let combinations = 0;
+
+  for (const incidentType of incidents) {
+    for (const safeNow of answers) {
+      for (const directThreat of answers) {
+        for (const knowsLocation of answers) {
+          for (const repeatedContact of answers) {
+            for (const imageShared of answers) {
+              const urgency = assessUrgency({
+                incidentType,
+                safeNow,
+                directThreat,
+                knowsLocation,
+                repeatedContact,
+                imageShared,
+              });
+              combinations += 1;
+
+              if (safeNow === "no" || directThreat === "yes" || knowsLocation === "yes") {
+                assert.equal(urgency.level, "urgent");
+              } else if ([safeNow, directThreat, knowsLocation].includes("unsure")) {
+                assert.equal(urgency.level, "soon");
+              } else if (
+                incidentType === "image-pressure" ||
+                repeatedContact === "yes" ||
+                imageShared === "yes"
+              ) {
+                assert.equal(urgency.level, "soon");
+              } else {
+                assert.equal(urgency.level, "steady");
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  assert.equal(combinations, incidents.length * 3 ** 5);
 });

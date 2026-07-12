@@ -7,6 +7,7 @@
   "scripts": {
     "test": "node --test --test-isolation=none",
     "validate": "node scripts/validate-monorepo.mjs",
+    "policy": "node scripts/check-policy.mjs",
     "smoke": "node scripts/browser-smoke.mjs"
   },
   "engines": {

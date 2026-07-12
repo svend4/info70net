@@ -58,6 +58,12 @@ footer {
 .back-link { color: var(--lab-blue-dark); font-weight: 800; text-decoration: none; }
 .back-link:hover { text-decoration: underline; }
 .lab-mark { padding: 0.32rem 0.55rem; background: var(--lab-lime); font-size: 0.78rem; font-weight: 900; letter-spacing: 0.12em; }
+.policy-link,
+footer a {
+  color: var(--lab-blue-dark);
+  font-weight: 800;
+}
+
 
 .app-intro { padding: clamp(2.3rem, 6vw, 5.2rem) 0 2.8rem; }
 .app-intro h1 { max-width: 12ch; margin: 0 0 0.9rem; font-size: clamp(2.6rem, 8vw, 6.2rem); line-height: 0.91; letter-spacing: -0.065em; }

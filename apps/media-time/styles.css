@@ -56,6 +56,11 @@ body {
   color: var(--media-offline);
 }
 
+.privacy-note a,
+.app-footer a {
+  color: var(--media-violet-dark);
+}
+
 .experience-section {
   padding-bottom: clamp(3rem, 7vw, 5.5rem);
 }

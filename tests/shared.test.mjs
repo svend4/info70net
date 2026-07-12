@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {
   APP_IDS,
   createStorage,
+  createSessionStorage,
   escapeHTML,
   getAppConfig,
   renderAppIntro,
@@ -136,11 +137,37 @@ test("createStorage follows the requested API and round-trips JSON values", () =
   assert.deepEqual(storage.get("progress", null), {
     completed: 2,
     labels: ["one", "two"],
+
   });
 
   storage.remove("progress");
   assert.equal(storage.get("progress", null), null);
   assert.throws(() => storage.set("invalid", undefined), TypeError);
+});
+
+test("local and current-tab stores use independent namespaces", () => {
+  const local = createStorage("shared-test-storage-boundary");
+  const session = createSessionStorage("shared-test-storage-boundary");
+  local.clear();
+  session.clear();
+
+  local.set("value", "persistent-choice");
+  session.set("value", "current-tab-choice");
+
+  assert.equal(local.get("value"), "persistent-choice");
+  assert.equal(session.get("value"), "current-tab-choice");
+  assert.deepEqual(Object.keys(session).sort(), [
+    "clear",
+    "get",
+    "remove",
+    "set",
+  ]);
+
+  session.clear();
+  assert.equal(session.get("value", null), null);
+  assert.equal(local.get("value"), "persistent-choice");
+  local.clear();
+  assert.throws(() => createSessionStorage(""), TypeError);
 });
 
 test("createStorage clear is limited to its namespace", () => {
