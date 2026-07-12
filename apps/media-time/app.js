@@ -1,4 +1,5 @@
 import {
+  createSessionStorage,
   createStorage,
   escapeHTML,
   getAppConfig,
@@ -21,7 +22,9 @@ import {
 const APP_ID = "media-time";
 const PLAN_KEY = "weekly-plan";
 const config = getAppConfig(APP_ID);
-const storage = createStorage(APP_ID);
+const storage = createSessionStorage(APP_ID);
+const legacyStorage = createStorage(APP_ID);
+legacyStorage.remove(PLAN_KEY);
 const categoryById = new Map(CATEGORIES.map((category) => [category.id, category]));
 const dayById = new Map(DAYS.map((day) => [day.id, day]));
 
@@ -249,7 +252,7 @@ renderPlanner();
 renderSummary();
 
 if (storedPlan !== null) {
-  elements.status.textContent = "Dein zuletzt gespeicherter Wochenplan wurde auf diesem Gerät wiederhergestellt.";
+  elements.status.textContent = "Dein zuletzt in dieser Registerkarte gespeicherter Wochenplan wurde wiederhergestellt.";
 }
 
 elements.form.addEventListener("submit", (event) => event.preventDefault());
@@ -272,7 +275,7 @@ elements.form.addEventListener("change", (event) => {
   const category = categoryById.get(input.dataset.categoryId);
   elements.status.textContent = `${category.label} am ${day.label}: ${formatMinutes(
     plan[day.id][category.id],
-  )} lokal gespeichert.`;
+  )} in dieser Registerkarte gespeichert.`;
 });
 
 elements.reset.addEventListener("click", () => {

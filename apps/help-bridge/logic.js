@@ -1,4 +1,8 @@
 const INCIDENT_IDS = new Set(["insults", "image-pressure", "hate-speech"]);
+export const DRAFT_SCHEMA_VERSION = 1;
+export const DRAFT_TTL_MS = 30 * 60 * 1000;
+export const DRAFT_MAX_BYTES = 2048;
+
 
 const ADULT_LABELS = Object.freeze({
   parent: "a parent or carer",
@@ -30,11 +34,50 @@ export const INCIDENTS = Object.freeze({
 function triState(value) {
   if (value === true || value === "yes") return true;
   if (value === false || value === "no") return false;
+  if (value === "unsure") return "unsure";
   return null;
 }
 
 function cleanText(value, maxLength) {
   return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
+}
+
+const SESSION_RECORD_KEYS = Object.freeze([
+  "version",
+  "createdAt",
+  "expiresAt",
+  "draft",
+]);
+const PERSISTED_DRAFT_KEYS = Object.freeze([
+  "incidentType",
+  "safeNow",
+  "directThreat",
+  "knowsLocation",
+  "repeatedContact",
+  "imageShared",
+  "adultRole",
+]);
+const TRI_STATE_VALUES = new Set([true, false, "unsure", null]);
+
+function hasExactKeys(value, expectedKeys) {
+  const keys = Object.keys(value).sort();
+  return (
+    keys.length === expectedKeys.length &&
+    keys.every((key, index) => key === [...expectedKeys].sort()[index])
+  );
+}
+
+function hasPersistableDraftShape(draft) {
+  return (
+    draft &&
+    typeof draft === "object" &&
+    !Array.isArray(draft) &&
+    hasExactKeys(draft, PERSISTED_DRAFT_KEYS) &&
+    (draft.incidentType === "" || INCIDENT_IDS.has(draft.incidentType)) &&
+    ["safeNow", "directThreat", "knowsLocation", "repeatedContact", "imageShared"]
+      .every((field) => TRI_STATE_VALUES.has(draft[field])) &&
+    (draft.adultRole === "" || Object.hasOwn(ADULT_LABELS, draft.adultRole))
+  );
 }
 
 export function normalizeDraft(value = {}) {
@@ -68,6 +111,62 @@ export function createPersistableDraft(value = {}) {
   };
 }
 
+export function createSessionDraftRecord(value = {}, now = Date.now()) {
+  const createdAt = Number(now);
+  if (!Number.isFinite(createdAt)) {
+    throw new TypeError("Draft timestamp must be a finite number.");
+  }
+
+  return {
+    version: DRAFT_SCHEMA_VERSION,
+    createdAt: new Date(createdAt).toISOString(),
+    expiresAt: new Date(createdAt + DRAFT_TTL_MS).toISOString(),
+    draft: createPersistableDraft(value),
+  };
+}
+
+export function readSessionDraftRecord(record, now = Date.now()) {
+  if (
+    !record ||
+    typeof record !== "object" ||
+    Array.isArray(record) ||
+    !hasExactKeys(record, SESSION_RECORD_KEYS) ||
+    record.version !== DRAFT_SCHEMA_VERSION ||
+    !hasPersistableDraftShape(record.draft)
+  ) {
+    return null;
+  }
+
+  try {
+    const bytes = new TextEncoder().encode(JSON.stringify(record)).byteLength;
+    if (bytes > DRAFT_MAX_BYTES) {
+      return null;
+    }
+  } catch {
+    return null;
+  }
+
+  const createdAt = Date.parse(record.createdAt);
+  const expiresAt = Date.parse(record.expiresAt);
+  const nowValue = Number(now);
+  if (
+    typeof record.createdAt !== "string" ||
+    typeof record.expiresAt !== "string" ||
+    !Number.isFinite(createdAt) ||
+    !Number.isFinite(expiresAt) ||
+    new Date(createdAt).toISOString() !== record.createdAt ||
+    new Date(expiresAt).toISOString() !== record.expiresAt ||
+    !Number.isFinite(nowValue) ||
+    createdAt > nowValue ||
+    expiresAt <= nowValue ||
+    expiresAt - createdAt !== DRAFT_TTL_MS
+  ) {
+    return null;
+  }
+
+  return createPersistableDraft(record.draft);
+}
+
 export function getTrustedAdultLabel(draft) {
   const normalized = normalizeDraft(draft);
   const role = ADULT_LABELS[normalized.adultRole] || "a trusted adult";
@@ -89,6 +188,27 @@ export function assessUrgency(value) {
       summary: "Move toward a safer place and involve a nearby adult now.",
       reasons: urgentReasons,
       emergency: true,
+    };
+  }
+
+  const uncertaintyReasons = [];
+  if (draft.safeNow === "unsure") {
+    uncertaintyReasons.push("you are not sure whether you are physically safe");
+  }
+  if (draft.directThreat === "unsure") {
+    uncertaintyReasons.push("you are not sure whether a message was a direct threat");
+  }
+  if (draft.knowsLocation === "unsure") {
+    uncertaintyReasons.push("you are not sure whether the person knows your location");
+  }
+
+  if (uncertaintyReasons.length > 0) {
+    return {
+      level: "soon",
+      label: "Check safety with an adult now",
+      summary: "Move near a safe adult and check the uncertain details together before continuing.",
+      reasons: uncertaintyReasons,
+      emergency: false,
     };
   }
 

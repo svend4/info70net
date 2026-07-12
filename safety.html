@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Plain-language safety and privacy information for the Small Steps child digital-safety toolkit."
+    >
+    <title>Safety &amp; privacy · Small Steps</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+    <link rel="stylesheet" href="./packages/shared/styles/base.css">
+    <link rel="stylesheet" href="./safety.css">
+  </head>
+  <body class="safety-page">
+    <a class="skip-link" href="#main-content">Skip to safety and privacy information</a>
+
+    <header class="safety-header">
+      <a class="safety-brand" href="./index.html">
+        <span class="safety-brand__mark" aria-hidden="true">S</span>
+        <span>Small Steps</span>
+      </a>
+      <a href="./index.html">← Back to all tools</a>
+    </header>
+
+    <main id="main-content">
+      <section class="safety-hero" aria-labelledby="page-title">
+        <p class="eyebrow">Plain-language product information</p>
+        <h1 id="page-title">Safety &amp; privacy</h1>
+        <p class="safety-hero__de" lang="de">Sicherheit &amp; Datenschutz – einfach erklärt</p>
+        <p class="safety-hero__lede">
+          These four prototypes work in the browser without an account, advertising,
+          analytics, live AI or a project backend. This page explains exactly
+          what each tool keeps and what happens when you follow an external link.
+        </p>
+        <p class="review-chip">
+          Page reviewed <time datetime="2026-07-12">12 July 2026</time>
+        </p>
+      </section>
+
+      <section class="promise-section" aria-labelledby="promises-title">
+        <div class="section-heading">
+          <p class="eyebrow">What you can expect</p>
+          <h2 id="promises-title">Four promises for this prototype</h2>
+        </div>
+        <div class="promise-grid">
+          <article>
+            <span aria-hidden="true">01</span>
+            <h3>No account or child profile</h3>
+            <p>The tools do not ask for a birth date, email address or sign-in.</p>
+          </article>
+          <article>
+            <span aria-hidden="true">02</span>
+            <h3>No tracking or advertising</h3>
+            <p>No analytics, advertising pixels, third-party scripts, fonts or embeds are loaded.</p>
+          </article>
+          <article>
+            <span aria-hidden="true">03</span>
+            <h3>Small, visible storage</h3>
+            <p>Automatic progress stays in the current tab. Longer storage needs a clear action.</p>
+          </article>
+          <article>
+            <span aria-hidden="true">04</span>
+            <h3>Human help for serious moments</h3>
+            <p>Help Bridge offers planning steps but cannot contact an adult, platform or emergency service.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="data-section" aria-labelledby="data-title">
+        <div class="section-heading">
+          <p class="eyebrow">Data map</p>
+          <h2 id="data-title">What each tool keeps</h2>
+          <p>“This tab” means the browser removes the data when that tab or its browsing session closes.</p>
+        </div>
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="data-title">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Tool</th>
+                <th scope="col">Data</th>
+                <th scope="col">Where and how long</th>
+                <th scope="col">Your control</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Safe Search</th>
+                <td>Search words stay in page memory by default. Starred source IDs are stored. Search history is stored only after opt-in.</td>
+                <td>Page memory until reload; starred sources and opted-in history in this browser until cleared.</td>
+                <td>History opt-in is off by default. Clear history or unstar sources at any time.</td>
+              </tr>
+              <tr>
+                <th scope="row">Media Time</th>
+                <td>Minutes entered for the weekly plan.</td>
+                <td>Only in this tab's session storage.</td>
+                <td>Use “Standardwoche wiederherstellen” or close the tab.</td>
+              </tr>
+              <tr>
+                <th scope="row">Help Bridge</th>
+                <td>Only structured check-in choices and a trusted-adult role after the explicit “Keep” action. The UI does not request names, handles or free-text notes.</td>
+                <td>Only in this tab. The record becomes unusable after 30 minutes and is removed while the tab is active or when it closes.</td>
+                <td>Choose “Clear my answers”, close the tab or wait for expiry.</td>
+              </tr>
+              <tr>
+                <th scope="row">AI Literacy</th>
+                <td>Schema version, selected answer IDs and a correctness result for each checked fictional exercise. No prompt is sent to AI.</td>
+                <td>Only in this tab's session storage.</td>
+                <td>Use “Reset progress” or close the tab.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="clear-section" aria-labelledby="clear-title">
+        <div>
+          <p class="eyebrow">Your control</p>
+          <h2 id="clear-title">Remove Small Steps data for this browser and tab</h2>
+          <p>
+            This removes persistent Small Steps keys for the current website origin
+            and session data belonging to this tab. It does not touch unrelated XAMPP applications.
+          </p>
+          <p class="clear-limit">
+            It cannot erase browser history, hosting logs or data held by an external
+            site. Other already-open tabs keep their own session data and in-memory
+            values until they are cleared or closed.
+          </p>
+        </div>
+        <div class="clear-action">
+          <button id="clear-toolkit-data" class="button button--danger" type="button" disabled>
+            Remove Small Steps data
+          </button>
+          <p id="clear-status" role="status" aria-live="polite"></p>
+          <noscript><p class="noscript-message">Turn on JavaScript to use this removal control, or clear site data in your browser settings.</p></noscript>
+        </div>
+      </section>
+
+      <section class="limits-section" aria-labelledby="limits-title">
+        <div class="section-heading">
+          <p class="eyebrow">Important limits</p>
+          <h2 id="limits-title">Before relying on a tool</h2>
+        </div>
+        <div class="limits-grid">
+          <article>
+            <h3>External sources can change</h3>
+            <p>
+              Safe Search is a time-bounded prototype starting list, not a guarantee
+              or full destination audit. Each card shows its review date and domain.
+              Opening it sends normal network information, such as an IP address, to
+              that external site.
+            </p>
+          </article>
+          <article>
+            <h3>Help Bridge is not an emergency service</h3>
+            <p>
+              If danger is immediate, move toward a safer place and call the local
+              emergency number (112 in Germany and across the EU), or ask a nearby
+              adult to call. The site cannot call or report for you.
+            </p>
+          </article>
+          <article>
+            <h3>This is a development prototype</h3>
+            <p>
+              The repository contains policy controls and an applicability review,
+              but it does not claim legal or accessibility conformance. Human
+              safeguarding, legal and accessibility reviews remain release gates.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="german-summary" lang="de" aria-labelledby="german-title">
+        <p class="eyebrow">Kurz auf Deutsch</p>
+        <h2 id="german-title">Du entscheidest, was gespeichert wird</h2>
+        <p>
+          Es gibt kein Konto, keine Werbung, keine Analyse und keine echte KI.
+          Automatischer Fortschritt bleibt nur in der aktuellen Registerkarte.
+          Suchverlauf wird nur nach deiner ausdrücklichen Auswahl länger gespeichert.
+          Ein Help-Bridge-Entwurf läuft nach 30 Minuten ab und enthält niemals Namen
+          oder freie Notizen.
+        </p>
+      </section>
+    </main>
+
+    <footer class="safety-footer">
+      <p><strong>Small Steps</strong> · child-safety prototype</p>
+      <a href="./index.html">Back to all tools</a>
+      <a href="./safety.html" aria-current="page">Safety &amp; privacy</a>
+    </footer>
+
+    <script type="module" src="./safety.js"></script>
+  </body>
+</html>

@@ -1,6 +1,12 @@
 # Opportunity analysis: child-safe digital apps for Germany
 
-_Last updated: 2026-07-12._
+_Historical discovery snapshot; current-status note added 2026-07-12._
+
+> This document preserves early opportunity framing and proposed sprint
+> architecture. Package names and local-server descriptions below are historical
+> and do not describe the current implementation. Use the
+> [README](../README.md), [product roadmap](./roadmap.md), and
+> [policy documentation](./policy/) as current sources of truth.
 
 ## Evidence base
 
@@ -29,7 +35,7 @@ _Last updated: 2026-07-12._
 6. Accessibility and mobile-first design.
 7. Localisation-ready copy for German first, then Ukrainian/Russian/Turkish/Arabic support.
 
-## Monorepo architecture started
+## Monorepo architecture started (historical proposal)
 
 - `packages/shared-data` contains shared safety principles, trusted resources, and demand scoring.
 - Each app under `apps/*` has a dependency-free static prototype with its own local server.
@@ -78,7 +84,7 @@ The first continuation sprint moves the repo beyond placeholder landing pages:
 2. The app asks for evidence, recency, perspective, and bias checks.
 3. Teacher mode turns exercises into classroom discussion cards.
 
-## Continuation sprint 2: engineering quality
+## Continuation sprint 2: engineering quality (superseded architecture)
 
 The second continuation sprint reduces copy-pasted application code and makes the prototypes easier to extend:
 

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-07-12",
+  "resources": [
+    {
+      "id": "eu-emergency-112",
+      "type": "emergency-number-claim",
+      "number": "112",
+      "scope": "Germany and every European Union Member State",
+      "sourceOwner": "European Commission",
+      "sourceUrl": "https://digital-strategy.ec.europa.eu/en/policies/112",
+      "language": "en",
+      "reviewedAt": "2026-07-12",
+      "reviewDue": "2026-10-10",
+      "reviewOwner": "Safety content reviewer",
+      "status": "active",
+      "limitations": [
+        "Use for real emergencies only.",
+        "This prototype cannot place the call or determine the user's country."
+      ]
+    }
+  ]
+}

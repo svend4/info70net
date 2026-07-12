@@ -47,6 +47,7 @@ footer {
 .site-header {
   min-height: 4.5rem;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
@@ -63,6 +64,37 @@ footer {
   background: rgba(255, 255, 255, 0.7);
   font-size: 0.86rem;
   font-weight: 650;
+}
+
+.policy-link {
+  color: var(--bridge-teal);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.review-note { font-size: 0.78rem; }
+
+.resume-draft {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 1rem 1.1rem;
+  border: 2px solid var(--bridge-teal);
+  border-radius: 0.9rem;
+  background: var(--bridge-mint);
+}
+
+.resume-draft h3,
+.resume-draft p { margin: 0; }
+.resume-draft p { max-width: 42rem; color: var(--bridge-muted); }
+
+.resume-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
 }
 
 .app-intro { padding: clamp(2rem, 5vw, 4.5rem) 0 2.3rem; }
@@ -147,7 +179,7 @@ fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
 .choice-card input:focus-visible + span { outline: 3px solid var(--bridge-teal-dark); outline-offset: 3px; }
 
 .question-list { display: grid; gap: 0.8rem; }
-.yes-no-row { display: grid; grid-template-columns: minmax(15rem, 1fr) auto auto; gap: 0.8rem; align-items: center; padding: 1rem 1.1rem; border: 1px solid var(--bridge-line); border-radius: 0.9rem; background: white; }
+.yes-no-row { display: grid; grid-template-columns: minmax(15rem, 1fr) auto auto auto; gap: 0.8rem; align-items: center; padding: 1rem 1.1rem; border: 1px solid var(--bridge-line); border-radius: 0.9rem; background: white; }
 .yes-no-row legend { float: left; width: auto; font-weight: 700; }
 .yes-no-row label { min-width: 4.7rem; padding: 0.45rem 0.7rem; border-radius: 0.6rem; background: #f2f7f5; cursor: pointer; }
 .yes-no-row input { accent-color: var(--bridge-teal); }
@@ -207,6 +239,15 @@ select:focus-visible, input:focus-visible, textarea:focus-visible, button:focus-
 .save-status { min-height: 1.5em; margin-bottom: 0; }
 
 footer { padding: 0 0 2rem; color: var(--bridge-muted); text-align: center; font-size: 0.9rem; }
+footer a { color: var(--bridge-teal); }
+
+.noscript-message {
+  margin: 1rem auto;
+  max-width: 50rem;
+  padding: 1rem;
+  border: 1px solid var(--bridge-coral);
+  border-radius: 0.75rem;
+}
 .visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important; }
 [hidden] { display: none !important; }
 

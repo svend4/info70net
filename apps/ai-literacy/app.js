@@ -1,4 +1,5 @@
 import {
+  createSessionStorage,
   createStorage,
   escapeHTML,
   getAppConfig,
@@ -18,7 +19,9 @@ import {
 const APP_ID = "ai-literacy";
 const PROGRESS_KEY = "exercise-progress";
 const config = getAppConfig(APP_ID);
-const storage = createStorage(APP_ID);
+const storage = createSessionStorage(APP_ID);
+const legacyStorage = createStorage(APP_ID);
+legacyStorage.remove(PROGRESS_KEY);
 
 const intro = document.querySelector("#app-intro");
 const experienceSection = document.querySelector("#experiences");
@@ -41,7 +44,7 @@ if (experiences.length > 0) {
 } else {
   experienceSection.hidden = true;
 }
-if (config.title) document.title = `${config.title} · AI Literacy Lab`;
+if (config.title) document.title = `${config.title} · Small Steps`;
 
 function prepareExperienceIntents() {
   for (const control of experienceCards.querySelectorAll("[data-experience-intent]")) {

@@ -253,6 +253,13 @@ body {
   font-size: 0.86rem;
 }
 
+.result-card__review {
+  color: var(--safe-muted);
+  font-size: 0.78rem;
+}
+
+.result-card__review time { font-weight: 750; }
+
 .safety-explanation {
   margin: auto 0 1rem;
   padding: 0.8rem;
@@ -445,6 +452,42 @@ body {
   background: var(--safe-pale);
 }
 
+.storage-choice {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 0.65rem;
+  padding: 0.8rem;
+  color: var(--safe-ink);
+  background: #f0faf7;
+  border: 1px solid var(--safe-line);
+  border-radius: 0.8rem;
+  cursor: pointer;
+}
+
+.storage-choice input {
+  width: 1.2rem;
+  height: 1.2rem;
+  margin: 0.12rem 0 0;
+}
+
+.storage-choice span {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.storage-choice small,
+.storage-status {
+  color: var(--safe-muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.storage-status {
+  min-height: 1.2rem;
+  margin: 0 0 0.8rem;
+}
+
 .app-footer {
   max-width: 48rem;
   margin: 0 auto;
@@ -453,6 +496,8 @@ body {
   text-align: center;
 }
 
+.app-footer a { color: var(--safe-blue-dark); }
+.app-footer p { margin-block: 0.45rem; }
 .noscript-message {
   position: fixed;
   right: 1rem;

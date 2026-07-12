@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-07-12",
+  "entries": [
+    {
+      "key": "safe-search:saved",
+      "storage": "localStorage",
+      "trigger": "explicit-star-action",
+      "retention": "until-user-clears",
+      "sensitivity": "low",
+      "fields": ["curated-resource-ids"]
+    },
+    {
+      "key": "safe-search:history-opt-in",
+      "storage": "localStorage",
+      "trigger": "explicit-checkbox",
+      "retention": "until-user-disables",
+      "sensitivity": "low",
+      "fields": ["boolean-preference"]
+    },
+    {
+      "key": "safe-search:history",
+      "storage": "localStorage",
+      "trigger": "search-after-explicit-opt-in",
+      "retention": "until-user-clears-or-disables",
+      "sensitivity": "medium",
+      "fields": [
+        "entry-id",
+        "query-up-to-120-characters",
+        "category",
+        "result-count",
+        "timestamp"
+      ]
+    },
+    {
+      "key": "media-time:weekly-plan",
+      "storage": "sessionStorage",
+      "trigger": "plan-edit",
+      "retention": "current-tab-session",
+      "sensitivity": "low",
+      "fields": [
+        "day-id",
+        "learning-minutes",
+        "creative-minutes",
+        "offline-minutes"
+      ]
+    },
+    {
+      "key": "help-bridge:triage-draft",
+      "storage": "sessionStorage",
+      "trigger": "explicit-keep-in-tab-action",
+      "retention": "unusable-after-30-minutes-removal-while-active-or-tab-close",
+      "ttlMinutes": 30,
+      "maximumBytes": 2048,
+      "sensitivity": "high",
+      "fields": [
+        "schema-version",
+        "created-at",
+        "expires-at",
+        "incident-type",
+        "safe-now",
+        "direct-threat",
+        "knows-location",
+        "repeated-contact",
+        "image-shared",
+        "trusted-adult-role"
+      ],
+      "excludedFields": [
+        "adult-name",
+        "notes",
+        "free-text",
+        "images"
+      ]
+    },
+    {
+      "key": "ai-literacy:exercise-progress",
+      "storage": "sessionStorage",
+      "trigger": "exercise-check",
+      "retention": "current-tab-session",
+      "sensitivity": "low",
+      "fields": [
+        "schema-version",
+        "answers-by-exercise-id",
+        "selected-answer-ids",
+        "correctness-result"
+      ]
+    }
+  ]
+}

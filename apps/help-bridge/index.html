@@ -14,7 +14,8 @@
 
     <header class="site-header">
       <a class="back-link" href="../../index.html" aria-label="Back to all tools">← All tools</a>
-      <span class="privacy-label">Local only - optional save</span>
+      <span class="privacy-label">This tab only · optional 30-minute draft</span>
+      <a class="policy-link" href="../../safety.html">Safety &amp; privacy</a>
     </header>
 
     <main id="main-content">
@@ -25,6 +26,7 @@
         <div>
           <h2 id="emergency-title">If someone is in immediate danger</h2>
           <p>Move to a safer place and call your local emergency number (112 in Germany and across the EU), or ask a nearby adult to call. This site cannot call or contact anyone for you.</p>
+          <p class="review-note">Emergency number reference reviewed 12 July 2026.</p>
         </div>
       </aside>
 
@@ -41,7 +43,7 @@
           <div>
             <p class="eyebrow">Calm check-in</p>
             <h2 id="bridge-title">Make a small safety plan</h2>
-            <p>This takes about two minutes. Nothing is stored unless you choose Save draft. A saved draft keeps only your check-in choices and trusted-adult role, never names or notes.</p>
+            <p>This takes about two minutes. Nothing is stored unless you choose to keep a temporary draft in this tab. It expires after 30 minutes and never includes names or notes.</p>
           </div>
           <div class="step-meter" aria-live="polite">
             <span id="step-label">Step 1 of 4</span>
@@ -49,11 +51,26 @@
           </div>
         </div>
 
-        <form id="triage-form" novalidate>
+        <aside id="resume-draft" class="resume-draft" aria-labelledby="resume-title" hidden>
+          <div>
+            <h3 id="resume-title">A temporary draft is available</h3>
+            <p>Its incident answers stay hidden until you choose Resume. It may contain sensitive structured choices from this tab.</p>
+          </div>
+          <div class="resume-actions">
+            <button id="resume-button" class="button secondary" type="button">
+              Resume temporary draft
+            </button>
+            <button id="discard-draft-button" class="button quiet danger-text" type="button">
+              Discard draft
+            </button>
+          </div>
+        </aside>
+
+        <form id="triage-form" novalidate hidden>
           <section class="form-step" data-step="0" aria-labelledby="step-one-title">
             <p class="step-kicker">Step 1</p>
             <h3 id="step-one-title" tabindex="-1">What is closest to what happened?</h3>
-            <p class="step-help">Pick one. You can add details later without repeating anything upsetting.</p>
+            <p class="step-help">Pick one. You can answer the safety questions next without repeating anything upsetting.</p>
 
             <fieldset class="choice-grid">
               <legend class="visually-hidden">Type of online situation</legend>
@@ -82,26 +99,31 @@
                 <legend>Are you somewhere physically safe right now?</legend>
                 <label><input type="radio" name="safeNow" value="yes" required> Yes</label>
                 <label><input type="radio" name="safeNow" value="no" required> No</label>
+                <label><input type="radio" name="safeNow" value="unsure" required> Not sure</label>
               </fieldset>
               <fieldset class="yes-no-row">
                 <legend>Has anyone made a direct threat to hurt or meet you?</legend>
                 <label><input type="radio" name="directThreat" value="yes" required> Yes</label>
                 <label><input type="radio" name="directThreat" value="no" required> No</label>
+                <label><input type="radio" name="directThreat" value="unsure" required> Not sure</label>
               </fieldset>
               <fieldset class="yes-no-row">
                 <legend>Could the person know where you are now?</legend>
                 <label><input type="radio" name="knowsLocation" value="yes" required> Yes</label>
                 <label><input type="radio" name="knowsLocation" value="no" required> No</label>
+                <label><input type="radio" name="knowsLocation" value="unsure" required> Not sure</label>
               </fieldset>
               <fieldset class="yes-no-row">
                 <legend>Have they kept contacting you after you wanted it to stop?</legend>
                 <label><input type="radio" name="repeatedContact" value="yes" required> Yes</label>
                 <label><input type="radio" name="repeatedContact" value="no" required> No</label>
+                <label><input type="radio" name="repeatedContact" value="unsure" required> Not sure</label>
               </fieldset>
               <fieldset class="yes-no-row">
                 <legend>Has an image already been sent or shared?</legend>
                 <label><input type="radio" name="imageShared" value="yes" required> Yes</label>
                 <label><input type="radio" name="imageShared" value="no" required> No</label>
+                <label><input type="radio" name="imageShared" value="unsure" required> Not sure</label>
               </fieldset>
             </div>
 
@@ -127,13 +149,7 @@
                 <option value="coach">Coach or youth worker</option>
                 <option value="other">Another trusted adult</option>
               </select>
-
-              <label for="adult-name">Their name <span>(optional)</span></label>
-              <input id="adult-name" name="adultName" type="text" maxlength="80" autocomplete="off">
-
-              <label for="notes">A short note for yourself <span>(optional)</span></label>
-              <textarea id="notes" name="notes" rows="4" maxlength="600" placeholder="For example: when it started, the account name, or what you want the adult to know."></textarea>
-              <p class="field-note">Do not copy private images here. This note is never included in a saved draft.</p>
+              <p class="field-note">Do not enter names, account handles, locations, private messages or images. This prototype keeps the check-in structured.</p>
             </div>
           </section>
 
@@ -155,10 +171,10 @@
             <button type="button" class="button secondary" id="back-button" hidden>Back</button>
             <button type="button" class="button primary" id="next-button">Continue</button>
             <button type="submit" class="button primary" id="plan-button" hidden>Build my plan</button>
-            <button type="button" class="button quiet" id="save-button">Save draft</button>
+            <button type="button" class="button quiet" id="save-button">Keep in this tab for 30 minutes</button>
             <button type="button" class="button quiet danger-text" id="clear-button">Clear my answers</button>
           </div>
-          <p class="save-explainer">Save draft stores only the structured check-in choices and trusted-adult role in this browser. It excludes the optional name and note.</p>
+          <p class="save-explainer">Optional: keep only the structured choices and trusted-adult role in this tab for 30 minutes. Closing the tab, expiry or Clear removes it. Names and notes are never stored.</p>
           <p id="save-status" class="save-status" role="status" aria-live="polite"></p>
         </form>
       </section>
@@ -166,7 +182,12 @@
 
     <footer>
       <p>Help Bridge is a planning tool, not an emergency or reporting service.</p>
+      <p><a href="../../safety.html">Safety &amp; privacy</a></p>
+      <p><small>Safety copy last reviewed 12 July 2026. Human safeguarding review is required before production use.</small></p>
     </footer>
+    <noscript>
+      <p class="noscript-message">The check-in needs JavaScript. The emergency information above remains available without it.</p>
+    </noscript>
     <script type="module" src="./app.js"></script>
   </body>
 </html>

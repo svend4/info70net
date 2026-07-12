@@ -1,4 +1,5 @@
 import {
+  createSessionStorage,
   createStorage,
   escapeHTML,
   getAppConfig,
@@ -8,7 +9,8 @@ import {
 import {
   assessUrgency,
   buildSafetyPlan,
-  createPersistableDraft,
+  createSessionDraftRecord,
+  readSessionDraftRecord,
   getDraftCompletion,
   normalizeDraft,
 } from "./logic.js";
@@ -16,7 +18,9 @@ import {
 const APP_ID = "help-bridge";
 const DRAFT_KEY = "triage-draft";
 const config = getAppConfig(APP_ID);
-const storage = createStorage(APP_ID);
+const storage = createSessionStorage(APP_ID);
+const legacyStorage = createStorage(APP_ID);
+legacyStorage.remove(DRAFT_KEY);
 
 const intro = document.querySelector("#app-intro");
 const experienceSection = document.querySelector("#experiences");
@@ -33,7 +37,11 @@ const stepLabel = document.querySelector("#step-label");
 const meterFill = document.querySelector("#meter-fill");
 const immediateWarning = document.querySelector("#immediate-warning");
 
+const resumePanel = document.querySelector("#resume-draft");
+const resumeButton = document.querySelector("#resume-button");
+const discardDraftButton = document.querySelector("#discard-draft-button");
 let currentStep = 0;
+let draftExpiryTimer = null;
 
 intro.innerHTML = renderAppIntro(config);
 const experiences = config.domainExperiences ?? config.experiences ?? [];
@@ -43,7 +51,7 @@ if (experiences.length > 0) {
   experienceSection.hidden = true;
 }
 
-if (config.title) document.title = `${config.title} · Help Bridge`;
+if (config.title) document.title = `${config.title} · Small Steps`;
 
 function formValue() {
   return normalizeDraft(Object.fromEntries(new FormData(form).entries()));
@@ -55,9 +63,12 @@ function setFormValue(draftValue) {
     const controls = [...form.querySelectorAll(`[name="${name}"]`)];
     for (const control of controls) {
       if (control.type === "radio") {
+        const normalizedValue = value === "unsure"
+          ? "unsure"
+          : value === true ? "yes" : value === false ? "no" : "";
         control.checked = name === "incidentType"
           ? control.value === value
-          : value !== null && control.value === (value ? "yes" : "no");
+          : control.value === normalizedValue;
       } else {
         control.value = value ?? "";
       }
@@ -69,9 +80,79 @@ function setStatus(message) {
   saveStatus.textContent = message;
 }
 
+function clearExpiryTimer() {
+  if (draftExpiryTimer !== null) {
+    clearTimeout(draftExpiryTimer);
+    draftExpiryTimer = null;
+  }
+}
+
+function removeStoredDraft(message) {
+  storage.remove(DRAFT_KEY);
+  clearExpiryTimer();
+  resumePanel.hidden = true;
+  if (message) {
+    setStatus(message);
+  }
+}
+
+function expireStoredDraft() {
+  removeStoredDraft("The temporary draft expired and was removed from this tab.");
+}
+
+function scheduleDraftExpiry(expiresAt) {
+  clearExpiryTimer();
+  const delay = Math.max(0, Date.parse(expiresAt) - Date.now());
+  draftExpiryTimer = setTimeout(() => {
+    draftExpiryTimer = null;
+    expireStoredDraft();
+  }, delay);
+}
+
+function enforceDraftExpiry() {
+  const record = storage.get(DRAFT_KEY, null);
+  if (!record) {
+    resumePanel.hidden = true;
+    clearExpiryTimer();
+    return;
+  }
+
+  if (!readSessionDraftRecord(record)) {
+    expireStoredDraft();
+    return;
+  }
+
+  scheduleDraftExpiry(record.expiresAt);
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) enforceDraftExpiry();
+});
+globalThis.addEventListener("focus", enforceDraftExpiry);
+globalThis.addEventListener("pageshow", enforceDraftExpiry);
+
 function updateImmediateWarning() {
-  const urgency = assessUrgency(formValue());
-  immediateWarning.hidden = !urgency.emergency;
+  const draft = formValue();
+  const urgency = assessUrgency(draft);
+  const hasCriticalUncertainty = [
+    draft.safeNow,
+    draft.directThreat,
+    draft.knowsLocation,
+  ].includes("unsure");
+
+  immediateWarning.hidden = !urgency.emergency && !hasCriticalUncertainty;
+  if (immediateWarning.hidden) {
+    return;
+  }
+
+  const heading = immediateWarning.querySelector("strong");
+  const copy = immediateWarning.querySelector("p");
+  heading.textContent = urgency.emergency
+    ? "Get immediate help now."
+    : "Check your safety with an adult now.";
+  copy.textContent = urgency.emergency
+    ? "Move toward a safer place and involve a nearby adult. If danger is immediate, call your local emergency number (112 in Germany and across the EU). Keep using this form only if it is safe."
+    : "Move near a safe adult and check the uncertain details together. If you may be in immediate danger, use your local emergency number.";
 }
 
 function validateStep(index) {
@@ -150,21 +231,46 @@ form.addEventListener("submit", (event) => {
   event.preventDefault();
   if (!validateStep(currentStep)) return;
   showStep(steps.length - 1);
-  setStatus("Plan built without saving. Any previously saved draft was left unchanged. Use Save draft to keep only the structured check-in choices.");
+  setStatus("Plan built without saving. Use Keep in this tab only if you want a 30-minute temporary draft.");
 });
 
 saveButton.addEventListener("click", () => {
   const draft = formValue();
   const completion = getDraftCompletion(draft);
-  storage.set(DRAFT_KEY, createPersistableDraft(draft));
-  setStatus(`Draft saved on this device (${completion.complete} of ${completion.total} check-in answers complete). Only check-in choices and the trusted-adult role were stored; names and notes were not saved.`);
+  const record = createSessionDraftRecord(draft);
+  storage.set(DRAFT_KEY, record);
+  resumePanel.hidden = true;
+  scheduleDraftExpiry(record.expiresAt);
+  setStatus(`Temporary structured draft kept in this tab for 30 minutes (${completion.complete} of ${completion.total} check-in answers complete).`);
 });
 
 clearButton.addEventListener("click", () => {
   form.reset();
-  storage.remove(DRAFT_KEY);
-  setStatus("Your saved Help Bridge draft was cleared from this device.");
+  removeStoredDraft("Your temporary Help Bridge draft was cleared from this tab.");
   updateImmediateWarning();
+  showStep(0);
+});
+
+resumeButton.addEventListener("click", () => {
+  const record = storage.get(DRAFT_KEY, null);
+  const draft = readSessionDraftRecord(record);
+  if (!draft) {
+    expireStoredDraft();
+    return;
+  }
+
+  setFormValue(draft);
+  resumePanel.hidden = true;
+  scheduleDraftExpiry(record.expiresAt);
+  const completion = getDraftCompletion(draft);
+  setStatus(`Temporary draft resumed in this tab (${completion.percent}% complete).`);
+  updateImmediateWarning();
+  showStep(0);
+});
+
+discardDraftButton.addEventListener("click", () => {
+  removeStoredDraft("The temporary draft was discarded without showing its answers.");
+  form.reset();
   showStep(0);
 });
 
@@ -199,13 +305,15 @@ experienceCards.addEventListener("click", (event) => {
   setStatus("Starting point selected. Review it, then continue when you are ready.");
 });
 
-const savedDraft = storage.get(DRAFT_KEY, null);
-if (savedDraft) {
-  const structuredDraft = createPersistableDraft(savedDraft);
-  storage.set(DRAFT_KEY, structuredDraft);
-  setFormValue(structuredDraft);
-  const completion = getDraftCompletion(structuredDraft);
-  setStatus(`Saved draft restored (${completion.percent}% complete). Names and notes are never restored because they are not saved.`);
+const storedRecord = storage.get(DRAFT_KEY, null);
+const savedDraft = readSessionDraftRecord(storedRecord);
+if (storedRecord && !savedDraft) {
+  removeStoredDraft("An expired, oversized or unknown temporary draft was removed.");
+} else if (savedDraft) {
+  resumePanel.hidden = false;
+  scheduleDraftExpiry(storedRecord.expiresAt);
+  setStatus("A temporary draft is available. Its incident answers remain hidden until you choose Resume.");
 }
 
 showStep(0, { focus: false });
+form.hidden = false;

@@ -7,6 +7,12 @@ export const SAFE_RESULTS = Object.freeze([
     category: "school",
     source: "fragFINN e. V.",
     url: "https://www.fragfinn.de/",
+    canonicalHost: "www.fragfinn.de",
+    reviewedAt: "2026-07-12",
+    reviewDue: "2026-10-10",
+    reviewOwner: "Content reviewer",
+    reviewStatus: "active",
+    reviewEvidence: "https://www.fragfinn.de/nutzungshinweise/",
     ageLabel: "6–12 Jahre",
     keywords: ["hausaufgaben", "wissen", "referat", "lernen", "suchmaschine"],
     safetyReasons: [
@@ -16,19 +22,25 @@ export const SAFE_RESULTS = Object.freeze([
     ],
   }),
   Object.freeze({
-    id: "blinde-kuh-school",
-    title: "Blinde Kuh: Themen für Hausaufgaben",
+    id: "hanisauland-school",
+    title: "HanisauLand: Politik einfach erklärt",
     description:
-      "Nachschlagehilfe für Tiere, Geschichte, Technik und viele weitere Schulthemen.",
+      "Lexikon, Comics und Erklärstücke helfen dabei, Politik und Zusammenleben zu verstehen.",
     category: "school",
-    source: "Blinde Kuh e. V.",
-    url: "https://www.blinde-kuh.de/",
-    ageLabel: "6–14 Jahre",
-    keywords: ["tiere", "geschichte", "technik", "schule", "lexikon"],
+    source: "Bundeszentrale für politische Bildung",
+    url: "https://www.hanisauland.de/",
+    canonicalHost: "www.hanisauland.de",
+    reviewedAt: "2026-07-12",
+    reviewDue: "2026-10-10",
+    reviewOwner: "Content reviewer",
+    reviewStatus: "active",
+    reviewEvidence: "https://www.hanisauland.de/",
+    ageLabel: "8–14 Jahre",
+    keywords: ["politik", "geschichte", "gesellschaft", "schule", "lexikon"],
     safetyReasons: [
-      "Die Redaktion nimmt nur ausgewählte Kinderseiten in die Suche auf.",
-      "Treffer werden mit Quelle und Thema angezeigt.",
-      "Das Angebot funktioniert ohne eigenes Profil.",
+      "Das Angebot wird von der Bundeszentrale für politische Bildung herausgegeben.",
+      "Begriffe werden in einer für Kinder gedachten Sprache erklärt.",
+      "Lexikon und Comics lassen sich ohne eigenes Profil lesen.",
     ],
   }),
   Object.freeze({
@@ -39,6 +51,12 @@ export const SAFE_RESULTS = Object.freeze([
     category: "school",
     source: "ZUM e. V.",
     url: "https://klexikon.zum.de/",
+    canonicalHost: "klexikon.zum.de",
+    reviewedAt: "2026-07-12",
+    reviewDue: "2026-10-10",
+    reviewOwner: "Content reviewer",
+    reviewStatus: "active",
+    reviewEvidence: "https://klexikon.zum.de/wiki/Klexikon:%C3%9Cber_uns",
     ageLabel: "6–12 Jahre",
     keywords: ["lexikon", "erklärung", "wissen", "referat", "quelle"],
     safetyReasons: [
@@ -54,7 +72,13 @@ export const SAFE_RESULTS = Object.freeze([
       "Aktuelle Nachrichten werden mit kurzen Texten und Videos altersgerecht eingeordnet.",
     category: "news",
     source: "ZDF",
-    url: "https://www.zdf.de/kinder/logo",
+    url: "https://www.logo.de/",
+    canonicalHost: "www.logo.de",
+    reviewedAt: "2026-07-12",
+    reviewDue: "2026-10-10",
+    reviewOwner: "Content reviewer",
+    reviewStatus: "active",
+    reviewEvidence: "https://www.logo.de/infos-logo-kindernachrichten-100.html",
     ageLabel: "8–12 Jahre",
     keywords: ["nachrichten", "politik", "welt", "aktuell", "video"],
     safetyReasons: [
@@ -64,19 +88,25 @@ export const SAFE_RESULTS = Object.freeze([
     ],
   }),
   Object.freeze({
-    id: "kiraka-news",
-    title: "KiRaKa: Hören, verstehen, mitreden",
+    id: "maus-audio-news",
+    title: "Die Maus: Hören, verstehen, mitreden",
     description:
-      "Audios und Erklärstücke zu Nachrichten, Alltag, Wissen und Kinderfragen.",
+      "MausRadio, Podcasts und Erklärstücke zu Alltag, Wissen und Kinderfragen.",
     category: "news",
     source: "Westdeutscher Rundfunk",
-    url: "https://kinder.wdr.de/radio/kiraka/",
-    ageLabel: "8–13 Jahre",
+    url: "https://www.wdrmaus.de/hoeren/",
+    canonicalHost: "www.wdrmaus.de",
+    reviewedAt: "2026-07-12",
+    reviewDue: "2026-10-10",
+    reviewOwner: "Content reviewer",
+    reviewStatus: "active",
+    reviewEvidence: "https://www.wdrmaus.de/hoeren/",
+    ageLabel: "Für Kinder",
     keywords: ["radio", "audio", "nachrichten", "kinderfragen", "wissen"],
     safetyReasons: [
-      "Beiträge werden journalistisch redigiert.",
-      "Das Angebot trennt Nachrichten und Unterhaltung sichtbar.",
-      "Zum Anhören ist kein persönliches Konto erforderlich.",
+      "Das Hörangebot wird redaktionell vom WDR betreut.",
+      "Formate und Sendetermine sind auf der Seite sichtbar beschrieben.",
+      "Audios lassen sich ohne eigenes Profil anhören.",
     ],
   }),
   Object.freeze({
@@ -87,6 +117,12 @@ export const SAFE_RESULTS = Object.freeze([
     category: "creative",
     source: "Seitenstark e. V.",
     url: "https://seitenstark.de/",
+    canonicalHost: "seitenstark.de",
+    reviewedAt: "2026-07-12",
+    reviewDue: "2026-10-10",
+    reviewOwner: "Content reviewer",
+    reviewStatus: "active",
+    reviewEvidence: "https://seitenstark.de/",
     ageLabel: "6–12 Jahre",
     keywords: ["basteln", "experimente", "spiele", "kreativ", "hobby"],
     safetyReasons: [
@@ -97,18 +133,24 @@ export const SAFE_RESULTS = Object.freeze([
   }),
   Object.freeze({
     id: "juki-creative",
-    title: "JUKI: Videos verstehen und gestalten",
+    title: "JUKI bei kindersache: Videos verstehen und gestalten",
     description:
       "Tipps, Lernmodule und kreative Aufgaben rund um Videos und einen sicheren Medienalltag.",
     category: "creative",
     source: "Deutsches Kinderhilfswerk",
-    url: "https://www.juki.de/",
-    ageLabel: "8–13 Jahre",
+    url: "https://www.kindersache.de/bereiche/juki",
+    canonicalHost: "www.kindersache.de",
+    reviewedAt: "2026-07-12",
+    reviewDue: "2026-10-10",
+    reviewOwner: "Content reviewer",
+    reviewStatus: "active",
+    reviewEvidence: "https://www.kindersache.de/bereiche/ueber-uns/ausfuehrliche-informationen/nutzungsbedingungen-fuer-kinder",
+    ageLabel: "8–12 Jahre",
     keywords: ["video", "film", "kreativ", "medien", "gestalten"],
     safetyReasons: [
-      "Das Angebot wird von einer gemeinnützigen Kinderrechtsorganisation getragen.",
-      "Lernmodule behandeln Privatsphäre und respektvollen Umgang.",
-      "Die Inhalte regen zum eigenen Gestalten statt zum endlosen Scrollen an.",
+      "Das Deutsche Kinderhilfswerk betreibt den Bereich für Kinder von 8 bis 12 Jahren.",
+      "Veröffentlichte Beiträge werden nach den Nutzungsbedingungen redaktionell geprüft.",
+      "Lesen und Ansehen ist ohne Konto möglich; Hochladen gehört zu einer moderierten Community.",
     ],
   }),
   Object.freeze({
@@ -119,6 +161,12 @@ export const SAFE_RESULTS = Object.freeze([
     category: "safety",
     source: "Internet-ABC e. V.",
     url: "https://www.internet-abc.de/kinder/",
+    canonicalHost: "www.internet-abc.de",
+    reviewedAt: "2026-07-12",
+    reviewDue: "2026-10-10",
+    reviewOwner: "Content reviewer",
+    reviewStatus: "active",
+    reviewEvidence: "https://www.internet-abc.de/kinder/",
     ageLabel: "6–12 Jahre",
     keywords: ["datenschutz", "internet", "passwort", "sicher", "lernen"],
     safetyReasons: [
@@ -169,6 +217,61 @@ function normalizeText(value) {
     .trim();
 }
 
+function parseReviewDay(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return null;
+  }
+
+  const timestamp = Date.parse(`${value}T00:00:00.000Z`);
+  if (
+    !Number.isFinite(timestamp) ||
+    new Date(timestamp).toISOString().slice(0, 10) !== value
+  ) {
+    return null;
+  }
+
+  return timestamp;
+}
+
+export function getApprovedResultUrl(result, now = Date.now()) {
+  if (!result || result.reviewStatus !== "active") {
+    return null;
+  }
+
+  const nowDate = new Date(Number(now));
+  const reviewedAt = parseReviewDay(result.reviewedAt);
+  const reviewDue = parseReviewDay(result.reviewDue);
+  if (!Number.isFinite(nowDate.getTime()) || reviewedAt === null || reviewDue === null) {
+    return null;
+  }
+
+  const todayUtc = Date.UTC(
+    nowDate.getUTCFullYear(),
+    nowDate.getUTCMonth(),
+    nowDate.getUTCDate(),
+  );
+  if (reviewedAt > todayUtc || reviewDue < todayUtc) {
+    return null;
+  }
+
+  try {
+    const url = new URL(result.url);
+    const expectedHost = String(result.canonicalHost ?? "").toLowerCase();
+    if (
+      url.protocol !== "https:" ||
+      url.hostname.toLowerCase() !== expectedHost ||
+      url.username ||
+      url.password ||
+      url.port
+    ) {
+      return null;
+    }
+
+    return url.href;
+  } catch {
+    return null;
+  }
+}
 export function filterResults(
   results,
   { query = "", category = "all" } = {},
@@ -218,9 +321,10 @@ export function createHistoryEntry(
   { query = "", category = "all", resultCount = 0 },
   timestamp = new Date().toISOString(),
 ) {
+  const normalizedQuery = String(query).trim().slice(0, 120);
   return {
-    id: `${timestamp}:${normalizeText(query)}:${category}`,
-    query: String(query).trim(),
+    id: `${timestamp}:${normalizeText(normalizedQuery)}:${category}`,
+    query: normalizedQuery,
     category,
     resultCount: Math.max(0, Number(resultCount) || 0),
     timestamp,
@@ -266,7 +370,7 @@ export function sanitizeHistory(value, limit = 6) {
     )
     .map((item) => ({
       id: String(item.id ?? `${item.timestamp}:${item.query}:${item.category}`),
-      query: item.query.trim(),
+      query: item.query.trim().slice(0, 120),
       category: item.category,
       resultCount: Math.max(0, Number(item.resultCount) || 0),
       timestamp: item.timestamp,

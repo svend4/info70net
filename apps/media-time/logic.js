@@ -36,6 +36,13 @@ const DEFAULT_MINUTES = Object.freeze({
   sunday: Object.freeze({ learning: 20, creative: 45, offline: 180 }),
 });
 
+export const REFLECTION_GUIDANCE = Object.freeze({
+  offlineShareExample: 40,
+  dailyDigitalMinutesExample: 180,
+  status:
+    "Configurable prototype reflection prompts, not medical advice or official limits.",
+});
+
 export function normalizeMinutes(value, maximum = 600) {
   const numericValue = Number(value);
 
@@ -148,12 +155,12 @@ export function evaluateBalance(plan) {
     ];
   }
 
-  if (percentages.offline < 40) {
+  if (percentages.offline < REFLECTION_GUIDANCE.offlineShareExample) {
     warnings.push({
       id: "offline-low",
       level: "warning",
       message:
-        "Weniger als 40 % deiner geplanten Zeit ist offline. Plane Bewegung, Pausen oder Treffen ein.",
+        "Beispiel-Check: Weniger als 40 % deiner geplanten Zeit ist offline. Passe das Familienziel an eure Situation an.",
     });
   }
 
@@ -169,11 +176,11 @@ export function evaluateBalance(plan) {
   for (const day of DAYS) {
     const dayTotals = getDayTotals(plan, day.id);
 
-    if (dayTotals.digital > 180) {
+    if (dayTotals.digital > REFLECTION_GUIDANCE.dailyDigitalMinutesExample) {
       warnings.push({
         id: `digital-high-${day.id}`,
         level: "warning",
-        message: `${day.label}: Mehr als 3 Stunden Bildschirmzeit geplant. Prüfe Pausen und Prioritäten.`,
+        message: `${day.label}: Beispiel-Check bei mehr als 3 Stunden. Prüft gemeinsam Pausen und Prioritäten; dies ist keine medizinische Grenze.`,
       });
     }
 
